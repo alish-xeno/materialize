@@ -1,0 +1,38 @@
+{% extends 'clientbase.html' %}
+{% load static %}
+{% block title %}
+Profile
+{% endblock %}
+{% block css %}
+{% endblock %}
+{% block content %}
+<div class="row" style="margin-top: 10px;">
+	<div class="col s6 m6">
+		<h4>I am {{user.name}}</h4>
+		<h5 class="teal">Contact: {{user.contact_no}}</h5>
+		<p>{{user.about|striptags}}</p>
+	</div>
+	<div class="col s6 m6">
+		<img src="{{user.image.url}}" style="width: 90%; max-height: 350px; object-fit: contain; background: #ccc;">
+	</div>
+</div>
+<div class="row">
+	<div class="col m6">
+		<!-- <a class="waves-effect waves-light btn-large social google">
+		<i class="fa fa-google"></i> Sign in with Google</a> -->
+		<a class="waves-effect waves-light btn-floating social facebook pulse" href="{{user.facebook}}" target="_blank">
+		<i class="fa fa-facebook"></i></a>
+		<a class="waves-effect waves-light btn-floating social instagram pulse" href="{{user.instagram}}" target="_blank">
+		<i class="fa fa-instagram"></i></a>
+		<a class="waves-effect waves-light btn-floating social google pulse" href="{{user.google}}" target="_blank">
+		<i class="fa fa-google"></i></a>
+		<a class="waves-effect waves-light btn-floating social youtube pulse" href="{{user.youtube}}" target="_blank">
+		<i class="fa fa-youtube"></i></a>
+		<!-- <a class="waves-effect btn blue pulse"><i class="fa fa-facebook fa-fw"></i></a>
+		<a class="waves-effect btn red pulse"><i class="fa fa-google fa-fw"></i></a>
+		<a class="waves-effect btn blue pulse"><i class="fa fa-youtube fa-fw"></i></a> -->
+	</div>
+</div>
+{% endblock %}
+{% block js %}
+{% endblock %}
