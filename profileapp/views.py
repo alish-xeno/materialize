@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import *
 from .models import *
-
+from .forms import *
+from django.http import JsonResponse
 
 # HANDLERS
 # HANDLERS
@@ -29,8 +30,16 @@ def handle500(request, exception=None):
 
 
 # Client Page
-class ClientHomeView(TemplateView):
-    template_name = "clienthome.html"
+class ClientMixin(object):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = Admin.objects.first()
+
+        return context
+
+
+class ClientHomeView(ClientMixin, TemplateView):
+    template_name = "clienttemplates/clienthome.html"
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -39,12 +48,87 @@ class ClientHomeView(TemplateView):
         return context
 
 
-class ClientProfileView(TemplateView):
-    template_name = "clientprofile.html"
+class ClientProfileView(ClientMixin, TemplateView):
+    template_name = "clienttemplates/clientprofile.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['user'] = Admin.objects.first()
 
         return context
 
+
+class ClientContactView(ClientMixin, CreateView):
+    template_name = "clienttemplates/clientcontact.html"
+    form_class = CustomerMessageForm
+    success_url = reverse_lazy('profileapp:clienthome')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['gallerylist'] = Gallery.objects.all().order_by('title') 
+
+        context['formset'] = MessageSpecificationFormSet()
+
+        return context
+
+    def form_valid(self, form):
+        data = form.cleaned_data
+        # print(data)
+        gallery = form.save()
+
+        formset = MessageSpecificationFormSet(data=self.request.POST)
+        # formset = MessageSpecificationFormSet(
+            # self.request.POST, self.request.FILES)
+        # print(formset)
+        for index, specform in enumerate(formset):
+            print(specform)
+            if specform.is_valid():
+                # print('valid +++++++++++++++++')
+                # print(specform)
+                value = specform.cleaned_data['value']
+                specification = specform.cleaned_data['specification']
+                spec = Specification.objects.get(title = specification)
+                MessageSpecificationComment.objects.get_or_create(
+                    message_obj = gallery,
+                    comment = value,
+                    specification=spec)
+                # print(value)
+
+
+        # Check if submitted forms are valid
+        # if formset.is_valid():
+        #     for data in formset.cleaned_data:
+        #             print(data['value'])
+        #             print(data['specification'])
+        # if formset.is_valid():
+        #     print(formset)
+        #     print('success formset........................................')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        print('failed form')
+        return super().form_invalid(form)
+
+
+
+
+# Axios Request Views
+class AxiosSpecificationListView(ClientMixin, View):
+    def get(self, request, *args, **kwargs):
+        from django.core import serializers
+        cat_id = self.request.GET.get('keyword', None)
+        if cat_id:
+            gallery_obj = Gallery.objects.get(id = cat_id)
+            gallery_specifications = Specification.objects.filter(gallery = gallery_obj)
+            print(gallery_specifications)
+            list_spec = []
+            for spec in gallery_specifications:
+                list_spec.append({'id': spec.id, 'title': spec.title})
+            serialized_gallery = serializers.serialize("json", gallery_specifications)
+            return JsonResponse({
+                'message': 'success', 
+                'cat_id': cat_id, 
+                'gallery_obj': serialized_gallery,
+                'list_spec': list_spec
+                })
+        else:
+            return JsonResponse({"error": "No search keyword"})

@@ -1,0 +1,203 @@
+{% extends 'clienttemplates/clientbase.html' %}
+{% load static %}
+{% block title %}
+Contact
+{% endblock %}
+{% block css %}
+<style type="text/css">
+	/* label color */
+   .input-field label {
+     color: #000;
+   }
+   /* label focus color */
+   .input-field input[type=text]:focus + label {
+     color: #000;
+   }
+   /* label underline focus color */
+   .input-field input[type=text]:focus {
+     border-bottom: 1px solid #000;
+     box-shadow: 0 1px 0 0 #000;
+   }
+   /* valid color */
+   .input-field input[type=text].valid {
+     border-bottom: 1px solid #000;
+     box-shadow: 0 1px 0 0 #000;
+   }
+   /* invalid color */
+   .input-field input[type=text].invalid {
+     border-bottom: 1px solid #000;
+     box-shadow: 0 1px 0 0 #000;
+   }
+   /* icon prefix focus color */
+   .input-field .prefix.active {
+     color: #000;
+   }
+</style>
+{% endblock %}
+{% block content %}
+<div class="row" style="margin-top: 10px;">
+	<form method="POST" enctype="multipart/form-data">
+		{% csrf_token %}
+		{{form.errors}}
+		<div class="col s12 m6">
+			<h4>Contact Message</h4>
+			<div class="row">
+				<div class="input-field col s12 m6">
+					<i class="material-icons prefix">account_circle</i>
+					{{form.full_name}}
+					<label for="id_full_name">First Name</label>
+		        </div>
+				<div class="input-field col s12 m6">
+					<i class="material-icons prefix">phone</i>
+					{{form.contact_no}}
+					<label for="id_contact_no">Telephone</label>
+		        </div>
+				<div class="clearfix"></div>
+				<div class="input-field col s12">
+					<i class="material-icons prefix">email</i>
+					{{form.email}}
+					<label for="id_email">Email</label>
+					<span class="helper-text" data-error="wrong" data-success="right">Validation</span>
+		        </div>
+				<div class="clearfix"></div>
+				<div class="input-field col s12">
+					<i class="material-icons prefix">subject</i>
+					{{form.subject}}
+					<label for="id_subject">Subject</label>
+		        </div>
+				<div class="input-field col s12">
+					<i class="material-icons prefix">mode_edit</i>
+					{{form.message}}
+					<label for="id_message">Message</label>
+		        </div>
+			</div>
+		</div>
+		<div class="col s12 m6">
+			<h4>Relational Comment</h4>
+			<div class="row" style="margin-bottom: 0;">
+				<div class="input-field col s12">
+					{{form.gallery}}
+					<label>Select Gallery</label>
+				</div>
+			</div>
+			<p style="margin: 0">
+				<label>
+					<input type="checkbox" id="myCheck" class="filled-in" onclick="myFunction()"/>
+					<span id="text">Display Specifications ?</span>
+				</label>
+			</p>
+			<div class="row" id="display_galleryspecifications" style="display: none;">
+				<div id="demo">
+					{{ formset.management_form }}
+					{% for form1 in formset %}
+						<!-- {{ form.value }}
+						{{ form.specification }} -->
+						<div class="bird-form">
+					        {{form1.value}}
+					        {{form1.specification}}
+				        </div>
+					{% endfor %}
+					<button id="add-form" type="button">Add Another Bird</button>
+				</div>
+			</div>
+		</div>
+		<div class="col s12 center-align">
+			<button class="btn waves-effect waves-light" type="submit" name="action">Submit
+				<i class="material-icons right">send</i>
+			</button>
+		</div>
+	</form>
+</div>
+<div class="row">
+
+</div>
+{% endblock %}
+{% block js %}
+<script type="text/javascript">
+	// document.getElementById("myCheck").checked = true;
+</script>
+<script>
+	function myFunction() {
+		var checkBox = document.getElementById("myCheck");
+		var text = document.getElementById("text");
+		if (checkBox.checked == true){
+			text.innerHTML = "Specifications Allowed";
+			// document.getElementById("myCheck").checked = true;
+			document.getElementById('myCheck').setAttribute('checked', 'checked');
+			document.getElementById('display_galleryspecifications').style.display = 'block';
+		} else {
+			text.innerHTML = "Specifications Hidden";
+			// document.getElementById("myCheck").checked = false;
+			document.getElementById('myCheck').removeAttribute('checked');
+			document.getElementById('display_galleryspecifications').style.display = 'none';
+		}
+	}
+</script>
+<script type="text/javascript">
+	document.addEventListener('DOMContentLoaded', function() {
+		var elems = document.querySelectorAll('select');
+		var instances = M.FormSelect.init(elems, {});
+	});
+</script>
+<script src="{% static 'js/axios.min.js' %}"></script>
+
+<script type="text/javascript">
+	function changeFunction() {
+		var x = document.getElementById("id_gallery").value;
+		// var result_area = document.getElementById("demo")
+		var result_area = document.querySelector(".bird-form")
+		console.log(result_area)
+		// document.getElementById("demo").innerHTML = "You selected: " + x;
+		if (x != ""){
+            axios.get("/axios/specifications/list/", {params: {"keyword": x}})
+            .then(resp => {
+                var results = resp.data;
+                var spec_list = resp.data.list_spec;
+                console.log(spec_list.length)
+                document.getElementById('id_form-TOTAL_FORMS').value = spec_list.length
+                var html = "";
+                for (i=0; i<spec_list.length; i++){
+                	// html += `<div><input type='text' name='value' id='id_${spec_list[i].title}' /></div>`
+                	html += `<input type="text" name="form-${i}-value" class="validate" placeholder="Enter Value" id="id_form-${i}-value"><input type="text" name="form-${i}-specification" class="validate" placeholder="Enter Spec" value="${spec_list[i].title}" id="id_form-${i}-specification">`
+                	console.log(spec_list[i])
+                }
+                result_area.innerHTML = html;
+
+                // var html = "";
+                // results.forEach(function(item, index){
+                //     html += `<div><a target="_blank" class="text-white" href="/logistic-admin/shipments/${item.pk}-${item.fields.shipment_code}/">${item.fields.shipment_code}</a></div>`
+                // });
+                // result_area.innerHTML = html;
+            }).catch(err => {
+                console.log(err);
+            })
+        }else{
+            result_area.innerHTML = "";
+            console.log("no keyword")
+        }
+	}
+</script>
+<script>
+    let birdForm = document.querySelectorAll(".bird-form")
+    let container = document.querySelector("#demo")
+    let addButton = document.querySelector("#add-form")
+    let totalForms = document.querySelector("#id_specform-TOTAL_FORMS")
+
+    let formNum = birdForm.length-1
+    addButton.addEventListener('click', addForm)
+
+    function addForm(e){
+        e.preventDefault()
+
+        let newForm = birdForm[0].cloneNode(true)
+        let formRegex = RegExp(`form-(\\d){1}-`,'g')
+
+        formNum++
+        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum}-`)
+
+        container.insertBefore(newForm, addButton)
+        
+        totalForms.setAttribute('value', `${formNum+1}`)
+    }
+</script>
+{% endblock %}

@@ -4,6 +4,11 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+    <link rel="shortcut icon" href="{% static 'images/peace.png' %}" type="image/x-icon" >
+    <link rel="icon" href="{% static 'images/peace.png' %}" sizes="32x32" >
+    <link rel="icon" href="{% static 'images/peace.png' %}" sizes="48x48" >
+    <link rel="icon" href="{% static 'images/peace.png' %}" sizes="96x96" >
+    <link rel="icon" href="{% static 'images/peace.png' %}" sizes="144x144" >
 	<title>{% block title %}{% endblock %} | Alish</title>
 	<!--Import Google Icon Font-->
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -13,15 +18,19 @@
     <link rel="stylesheet" href="{% static 'css/font-awesome.css' %}">
     <!-- social icon link -->
     <!-- https://terrymooreii.github.io/materialize-social/ -->
-
-
+    <style type="text/css">
+    	body {
+    		background: #e5eaf5;
+    	}
+    </style>
 	{% block css %}
 	{% endblock %}
 </head>
 <body>
-	<ul id="dropdown1" class="dropdown-content">
-		<li><a href="#!">one</a></li>
-		<li><a href="#!">two</a></li>
+	<ul id="dropdown1" class="dropdown-content" style="right: 150px !important; width: 200px !important; left: 0 !important;">
+		<!-- <li><a href="{% url 'profileapp:clienthome' %}">Home</a></li> -->
+        <li><a href="{% url 'profileapp:clientprofile' %}">Profile</a></li>
+        <li><a href="{% url 'profileapp:clientcontact' %}">Contact</a></li>
 		<li class="divider"></li>
 		<li><a href="#!">three</a></li>
 	</ul>
@@ -45,8 +54,7 @@
 					</div>
 				</form>
 	      	</li>
-	        <li><a href="{% url 'profileapp:clienthome' %}"><i class="material-icons" title="Home">home</i></a></li>
-	        <li><a href="{% url 'profileapp:clientprofile' %}"><i class="material-icons" title="Profile">art_track</i></a></li>
+	        
 	        <li><a class="dropdown-trigger" href="#!" data-target="dropdown1"><i class="material-icons">more_vert</i></a></li>
 	      </ul>
 	    </div>
@@ -63,6 +71,7 @@
 			</div>
 		</form>
         <li><a href="{% url 'profileapp:clientprofile' %}"><i class="material-icons" title="Profile">art_track</i> Profile</a></li>
+        <li><a href="{% url 'profileapp:clientcontact' %}"><i class="material-icons" title="Contact">contact</i> Contact</a></li>
         <li><a class="dropdown-trigger" href="#!" data-target="dropdown1-mobile"><i class="material-icons">more_vert</i> Options</a></li>
 	</ul>
 	<div class="progress" id="progress_bar">
@@ -99,6 +108,7 @@
 	</footer>
     <!-- Compiled and minified JavaScript -->
     <script src="{% static 'js/materialize.min.js' %}"></script>
+    <script src="{% static 'js/axios.min.js' %}"></script>
     <script type="text/javascript">
     	var dropdowns = document.querySelectorAll('.dropdown-trigger')
 		for (var i = 0; i < dropdowns.length; i++){

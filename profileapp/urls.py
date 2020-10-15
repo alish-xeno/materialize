@@ -9,5 +9,10 @@ urlpatterns = [
     # path('', DemoHomeView.as_view(), name="demohome"),
     path('', ClientHomeView.as_view(), name="clienthome"),
     path('profile/', ClientProfileView.as_view(), name="clientprofile"),
+    path('contact/', ClientContactView.as_view(), name="clientcontact"),
+
+    # Axios requests
+    path('axios/specifications/list/', AxiosSpecificationListView.as_view(), 
+    	name = "axiosspecificationlist"),
 
 ]
