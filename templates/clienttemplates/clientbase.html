@@ -150,6 +150,25 @@
     		x.style.display = "none"
     	})
     </script>
+    <script type="text/javascript">
+    	{% if messages %}
+			{% for message in messages %}
+				var msg = '<span>{{message}}</span><button onclick="clickFunction()" class="btn-flat toast-action"><i class="medium material-icons">close</i></button>';
+				M.toast({
+					html: msg, 
+					classes: 'rounded',
+					displayLength:2500,
+					classes: 'success_message'
+				});
+			{% endfor %}
+		{% endif %}
+    </script>
+    <script type="text/javascript">
+    	function clickFunction(){
+    		// alert('hhhh')
+    		M.Toast.dismissAll();
+    	}
+    </script>
 	{% block js %}
 	{% endblock %}
 </body>

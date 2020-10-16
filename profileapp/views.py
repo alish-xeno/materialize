@@ -5,6 +5,8 @@ from .models import *
 from .forms import *
 from django.http import JsonResponse
 from django.conf import settings
+from django.contrib.messages.views import SuccessMessageMixin
+
 
 # HANDLERS
 # HANDLERS
@@ -31,7 +33,7 @@ def handle500(request, exception=None):
 
 
 # Client Page
-class ClientMixin(object):
+class ClientMixin(SuccessMessageMixin, object):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user'] = Admin.objects.first()
@@ -63,6 +65,7 @@ class ClientContactView(ClientMixin, CreateView):
     template_name = "clienttemplates/clientcontact.html"
     form_class = CustomerMessageForm
     success_url = reverse_lazy('profileapp:clienthome')
+    success_message = "Message Sent Successfully"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -76,34 +79,36 @@ class ClientContactView(ClientMixin, CreateView):
         data = form.cleaned_data
         # print(data)
         gallery = form.save()
+        try:
+            formset = MessageSpecificationFormSet(data=self.request.POST)
+            # formset = MessageSpecificationFormSet(
+                # self.request.POST, self.request.FILES)
+            # print(formset)
+            for index, specform in enumerate(formset):
+                print(specform)
+                if specform.is_valid():
+                    # print('valid +++++++++++++++++')
+                    # print(specform)
+                    value = specform.cleaned_data['value']
+                    specification = specform.cleaned_data['specification']
+                    spec = Specification.objects.get(id = specification)
+                    MessageSpecificationComment.objects.get_or_create(
+                        message_obj = gallery,
+                        comment = value,
+                        specification=spec)
+                    # print(value)
 
-        formset = MessageSpecificationFormSet(data=self.request.POST)
-        # formset = MessageSpecificationFormSet(
-            # self.request.POST, self.request.FILES)
-        # print(formset)
-        for index, specform in enumerate(formset):
-            print(specform)
-            if specform.is_valid():
-                # print('valid +++++++++++++++++')
-                # print(specform)
-                value = specform.cleaned_data['value']
-                specification = specform.cleaned_data['specification']
-                spec = Specification.objects.get(title = specification)
-                MessageSpecificationComment.objects.get_or_create(
-                    message_obj = gallery,
-                    comment = value,
-                    specification=spec)
-                # print(value)
 
-
-        # Check if submitted forms are valid
-        # if formset.is_valid():
-        #     for data in formset.cleaned_data:
-        #             print(data['value'])
-        #             print(data['specification'])
-        # if formset.is_valid():
-        #     print(formset)
-        #     print('success formset........................................')
+            # Check if submitted forms are valid
+            # if formset.is_valid():
+            #     for data in formset.cleaned_data:
+            #             print(data['value'])
+            #             print(data['specification'])
+            # if formset.is_valid():
+            #     print(formset)
+            #     print('success formset........................................')
+        except:
+            pass
         return super().form_valid(form)
 
     def form_invalid(self, form):
