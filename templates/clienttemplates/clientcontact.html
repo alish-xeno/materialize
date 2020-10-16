@@ -38,7 +38,6 @@ Contact
 <div class="row" style="margin-top: 10px;">
 	<form method="POST" enctype="multipart/form-data">
 		{% csrf_token %}
-		{{form.errors}}
 		<div class="col s12 m6">
 			<h4>Contact Message</h4>
 			<div class="row">
@@ -93,11 +92,11 @@ Contact
 						<!-- {{ form.value }}
 						{{ form.specification }} -->
 						<div class="bird-form">
-					        {{form1.value}}
-					        {{form1.specification}}
+					        <!-- {{form1.value}}
+					        {{form1.specification}} -->
 				        </div>
 					{% endfor %}
-					<button id="add-form" type="button">Add Another Bird</button>
+					<!-- <button id="add-form" type="button">Add Another Bird</button> -->
 				</div>
 			</div>
 		</div>
@@ -105,6 +104,7 @@ Contact
 			<button class="btn waves-effect waves-light" type="submit" name="action">Submit
 				<i class="material-icons right">send</i>
 			</button>
+			{{form.errors}}
 		</div>
 	</form>
 </div>
@@ -158,7 +158,7 @@ Contact
                 var html = "";
                 for (i=0; i<spec_list.length; i++){
                 	// html += `<div><input type='text' name='value' id='id_${spec_list[i].title}' /></div>`
-                	html += `<input type="text" name="form-${i}-value" class="validate" placeholder="Enter Value" id="id_form-${i}-value"><input type="text" name="form-${i}-specification" class="validate" placeholder="Enter Spec" value="${spec_list[i].title}" id="id_form-${i}-specification">`
+                	html += `<div class="col m6 col s12"><div class="form-group">${spec_list[i].title}<input type="text" name="form-${i}-value" class="form-control" placeholder="Enter Comment" id="id_form-${i}-value"></div></div><input type="text" name="form-${i}-specification" class="validate" placeholder="Enter Spec" value="${spec_list[i].id}" id="id_form-${i}-specification" hidden="hidden">`
                 	console.log(spec_list[i])
                 }
                 result_area.innerHTML = html;
