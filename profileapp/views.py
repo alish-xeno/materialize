@@ -4,6 +4,7 @@ from django.views.generic import *
 from .models import *
 from .forms import *
 from django.http import JsonResponse
+from django.conf import settings
 
 # HANDLERS
 # HANDLERS
@@ -34,6 +35,7 @@ class ClientMixin(object):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user'] = Admin.objects.first()
+        context['settings_debug'] = settings.DEBUG
 
         return context
 
